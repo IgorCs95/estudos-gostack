@@ -1,9 +1,9 @@
 import express from 'express';
 
+import {hellowWorld} from './routes';
+
 const app = express();
 
-app.get('/',(request,response) =>{
-    return response.json({message:'Hello foi tudo'});
-})
+app.get('/', hellowWorld);
 
 app.listen(3333);
