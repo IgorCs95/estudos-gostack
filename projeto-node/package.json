@@ -5,14 +5,20 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "dev:serve": "ts-node-dev --transpile-only --inspect --ignore-watch node_modules src/server.ts"
+    "dev:serve": "ts-node-dev --transpile-only --inspect --ignore-watch node_modules src/server.ts",
+    "typeorm": "ts-node-dev ./node_modules/typeorm/cli.js"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "date-fns": "^2.16.1",
     "express": "^4.17.1",
+    "pg": "^8.5.1",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.2.29",
     "uuidv4": "^6.2.5"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
     "@types/express": "^4.17.8",
     "@typescript-eslint/eslint-plugin": "^4.3.0",
     "@typescript-eslint/parser": "^4.3.0",
