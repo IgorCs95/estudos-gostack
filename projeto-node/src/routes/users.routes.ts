@@ -4,6 +4,7 @@ import multer from 'multer';
 import uploadConfig from '../config/upload';
 
 import CreateUserService from '../service/CreateUserService';
+import UpdateUserAvatarService from '../service/UpdateUserAvatarService';
 
 import ensureAuthenticated from '../middlewares/ensureAuthenticated';
 
@@ -35,7 +36,20 @@ usersRouter.patch(
     ensureAuthenticated,
     upload.single('avatar'),
     async (request, response) => {
-        return response.json({ ok: 'ok' });
+        try {
+            const updateUserAvatar = new UpdateUserAvatarService();
+
+            const user = await updateUserAvatar.execute({
+                user_id: request.user.id,
+                avatarFileName: request.file.filename,
+            });
+            // @ts-expect-error Aqui vai ocorrer um erro, mas estou ignorando
+            delete user.password;
+
+            return response.status(200).json(user);
+        } catch (error) {
+            return response.status(400).json({ erro: error.message });
+        }
     },
 );
 
