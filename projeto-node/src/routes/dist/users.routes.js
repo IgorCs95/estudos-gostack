@@ -37,25 +37,49 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var express_1 = require("express");
-var AuthenticateUserService_1 = require("../service/AuthenticateUserService");
-var sessionsRouter = express_1.Router();
-sessionsRouter.post('/', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, email, password, authenticateUser, _b, user, token;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
+var multer_1 = require("multer");
+var upload_1 = require("../config/upload");
+var CreateUserService_1 = require("../service/CreateUserService");
+var UpdateUserAvatarService_1 = require("../service/UpdateUserAvatarService");
+var ensureAuthenticated_1 = require("../middlewares/ensureAuthenticated");
+var usersRouter = express_1.Router();
+var upload = multer_1["default"](upload_1["default"]);
+usersRouter.post('/', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, name, email, password, creatUser, user;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
-                _a = request.body, email = _a.email, password = _a.password;
-                authenticateUser = new AuthenticateUserService_1["default"]();
-                return [4 /*yield*/, authenticateUser.execute({
+                _a = request.body, name = _a.name, email = _a.email, password = _a.password;
+                creatUser = new CreateUserService_1["default"]();
+                return [4 /*yield*/, creatUser.execute({
+                        name: name,
                         email: email,
                         password: password
                     })];
             case 1:
-                _b = _c.sent(), user = _b.user, token = _b.token;
+                user = _b.sent();
                 // @ts-expect-error Aqui vai ocorrer um erro, mas estou ignorando
                 delete user.password;
-                return [2 /*return*/, response.json({ user: user, token: token })];
+                return [2 /*return*/, response.json(user)];
         }
     });
 }); });
-exports["default"] = sessionsRouter;
+usersRouter.patch('/avatar', ensureAuthenticated_1["default"], upload.single('avatar'), function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var updateUserAvatar, user;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                updateUserAvatar = new UpdateUserAvatarService_1["default"]();
+                return [4 /*yield*/, updateUserAvatar.execute({
+                        user_id: request.user.id,
+                        avatarFileName: request.file.filename
+                    })];
+            case 1:
+                user = _a.sent();
+                // @ts-expect-error Aqui vai ocorrer um erro, mas estou ignorando
+                delete user.password;
+                return [2 /*return*/, response.status(200).json(user)];
+        }
+    });
+}); });
+exports["default"] = usersRouter;

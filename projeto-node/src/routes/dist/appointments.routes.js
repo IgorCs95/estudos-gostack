@@ -37,25 +37,42 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var express_1 = require("express");
-var AuthenticateUserService_1 = require("../service/AuthenticateUserService");
-var sessionsRouter = express_1.Router();
-sessionsRouter.post('/', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, email, password, authenticateUser, _b, user, token;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
+var date_fns_1 = require("date-fns");
+var typeorm_1 = require("typeorm");
+var AppointmentsRepository_1 = require("../repositories/AppointmentsRepository");
+var CreateAppointmentService_1 = require("../service/CreateAppointmentService");
+var ensureAuthenticated_1 = require("../middlewares/ensureAuthenticated");
+var appointmentsRouter = express_1.Router();
+appointmentsRouter.use(ensureAuthenticated_1["default"]);
+appointmentsRouter.get('/', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var appointmentRepository, appontments;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
             case 0:
-                _a = request.body, email = _a.email, password = _a.password;
-                authenticateUser = new AuthenticateUserService_1["default"]();
-                return [4 /*yield*/, authenticateUser.execute({
-                        email: email,
-                        password: password
-                    })];
+                appointmentRepository = typeorm_1.getCustomRepository(AppointmentsRepository_1["default"]);
+                return [4 /*yield*/, appointmentRepository.find()];
             case 1:
-                _b = _c.sent(), user = _b.user, token = _b.token;
-                // @ts-expect-error Aqui vai ocorrer um erro, mas estou ignorando
-                delete user.password;
-                return [2 /*return*/, response.json({ user: user, token: token })];
+                appontments = _a.sent();
+                return [2 /*return*/, response.json(appontments)];
         }
     });
 }); });
-exports["default"] = sessionsRouter;
+appointmentsRouter.post('/', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, provider_id, date, parseDate, createAppointment, appointment;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _a = request.body, provider_id = _a.provider_id, date = _a.date;
+                parseDate = date_fns_1.parseISO(date);
+                createAppointment = new CreateAppointmentService_1["default"]();
+                return [4 /*yield*/, createAppointment.execute({
+                        date: parseDate,
+                        provider_id: provider_id
+                    })];
+            case 1:
+                appointment = _b.sent();
+                return [2 /*return*/, response.json(appointment)];
+        }
+    });
+}); });
+exports["default"] = appointmentsRouter;
